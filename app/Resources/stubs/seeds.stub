@@ -1,0 +1,13 @@
+<?php
+
+namespace {{namespace}};
+
+class {{class}} extends \Database\Seed
+{
+
+    public function handle(): void 
+    {
+        //
+    }
+
+}

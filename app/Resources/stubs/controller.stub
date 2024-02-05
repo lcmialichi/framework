@@ -1,0 +1,15 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Http\Request\RequestInterface;
+use App\Http\Response\Response;
+
+class {{class}}
+{
+  public function index(RequestInterface $request)
+  {
+    //
+  }
+
+}

@@ -1,0 +1,13 @@
+<?php
+
+namespace {{namespace}};
+
+use Validators\Contracts\ValidatorHandler;
+
+class {{class}} implements ValidatorHandler
+{
+    public function handle(mixed $content): bool
+    {   
+        return true;
+    }
+}

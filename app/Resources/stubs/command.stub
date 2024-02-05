@@ -1,0 +1,16 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Console\Displayer;
+
+class {{class}} extends Displayer
+{   
+    private string $command = ""; // name your command;
+    private string $description = ""; // describe your command;
+
+    public function handler(): void
+    {
+        //
+    }
+}
