@@ -14,7 +14,7 @@ services:
     env_file: 
       - ./.env
     networks:
-      - robot
+      - framework
   rabbitmq:
     container_name: app_rabbitmq
     image: rabbitmq:latest
@@ -22,7 +22,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     networks:
-      - robot
+      - framework
   db:
     image: mysql:8.0.0
     container_name: app_db
@@ -37,15 +37,15 @@ services:
     ports:
       - 3306:3306
     networks:
-      - robot
+      - framework
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
 networks:
-  robot: 
+  framework: 
     driver: bridge
-    name: robot
+    name: framework
 volumes:
   database:
