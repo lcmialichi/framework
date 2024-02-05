@@ -1,0 +1,18 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Event\Listener;
+
+class {{class}} implements Listener
+{
+    public function name(): string
+    {
+        return "";
+    }
+
+    public function handle(array $payload): void
+    {
+        //
+    }
+}

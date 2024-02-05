@@ -1,0 +1,35 @@
+FROM php:8.1.10-apache
+
+RUN apt-get update && \
+    apt-get install -y libzip-dev zip unzip && \
+    docker-php-ext-install zip && \
+    a2enmod rewrite
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    composer --version
+
+RUN apt-get install -y default-mysql-client
+RUN docker-php-ext-install pcntl posix
+
+RUN apt-get update && \
+    apt-get install -y \
+    libpq-dev \
+    libzip-dev \
+    && docker-php-ext-install pdo_mysql mysqli
+
+COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+
+RUN service apache2 restart
+
+WORKDIR /var/www/html
+
+RUN docker-php-ext-install sockets
+RUN docker-php-ext-enable sockets
+
+COPY . .
+
+RUN chmod -R 777 .
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]

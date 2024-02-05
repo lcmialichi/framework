@@ -1,0 +1,23 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Event\EventHandler;
+
+class {{class}} extends EventHandler
+{
+    public function channels(): array
+    {
+        return [
+           //
+        ];
+    }
+
+    public function payload(): array
+    {
+        return [
+           //
+        ];
+    }
+
+}
