@@ -11,7 +11,7 @@ class TestCommand extends Displayer
 
     public function handler(): void
     {
-        //
+        throw new \Exception("This is a test exception");
     }
     
 }

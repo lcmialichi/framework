@@ -10,25 +10,9 @@ use App\Contracts\ExceptionHandlerInterface;
 require __DIR__ . "/vendor/autoload.php";
 
 $app = require __DIR__ . "/boot/Application.php";
-
 $app->bind(
     ExceptionHandlerInterface::class,
     fn($app) => $app->make(CommandHandler::class)
 );
 
-// dd(resolve(CommandEmiter::class));
-$console = new Console();
-$command = $app->make(Command::class, [
-    "loader" => new ClassLoader(
-        "App\\Console\\Commands",
-        true
-    )
-]);
-
-$argument = $console->argument(1);
-if (empty($argument)) {
-    $command->outputList();
-    exit;
-}
-
-$command->run($argument);
+$app->make(CommandEmiter::class)->emit();

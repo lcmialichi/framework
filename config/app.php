@@ -6,5 +6,8 @@ return [
     ],
     "providers" => [
         "namespace" => "App\\Resources\\Providers",
+    ],
+    "command" => [
+        "namespace" => "App\\Console\\Commands",
     ]
 ];
