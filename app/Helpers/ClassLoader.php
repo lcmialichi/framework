@@ -17,69 +17,94 @@ class ClassLoader
         return str_replace("\\", "/", $this->namespace());
     }
 
-    public function namespace()
+    public function namespace ()
     {
         return $this->namespace;
     }
 
     public function appRoot()
     {
-        $appRoot =  environment("APP_ROOT");
-        if (!endsWith($appRoot, "/")) {
-            $appRoot .= "/";
-        }
-
-        return $appRoot;
+        return ROOT_PATH;
     }
 
-    public function load()
-    {      
+    public function load(): array
+    {
         if (!is_dir($path = $this->getNamespaceClass())) {
-            throw new \Exception("Diretorio para o namespace informado invalido!");
+            throw new \Exception("Directory for the given namespace is invalid!");
         }
+
         $mappedClasses = [];
         foreach (scandir($path) as $item) {
-            if (!in_array($item, [".", ".."])) {
-                if (is_dir($path . "/" . $item) && $this->recursive()) {
-                    if($this->permitedToLoad($this->namespace(). "\\" . $item)){
-                        $loaded = self::createRecursive($this->namespace() . "\\" . $item);
-                        if ($loaded && count($loaded) > 0) {
-                            array_push($mappedClasses, ...$loaded);
-                        }
-                    }
-                }
-                if (file_exists($path . "/" . $item)) {
-                    $possibleClass =  $this->namespace() . "\\" . str_replace(".php","",$item);
-                    if ($this->permitedToLoad($possibleClass) && class_exists($possibleClass)) {
-                        $reflaction = new \ReflectionClass($possibleClass);
-                        if($reflaction->isInstantiable()){
-                            $mappedClasses[] = $possibleClass;
+            if (in_array($item, [".", ".."])) {
+                continue;
+            }
 
-                        }
-                    }
-                }
+            $filePath = $path . "/" . $item;
+            if (is_dir($filePath) && $this->recursive()) {
+                $this->loadDirectory($this->namespace() . "\\" . $item, $mappedClasses);
+
+            }
+            if (file_exists($filePath)) {
+                $this->loadClass($this->buildClassNamespace($item), $mappedClasses);
             }
         }
-        
+
         return $mappedClasses;
     }
 
-    public function psr4LoadedClasses()
+    private function loadDirectory(string $namespace, array &$mappedClasses): void
     {
-        $composerJsonPath =  $this->appRoot() . 'composer.json';
-        $composerConfig = json_decode(file_get_contents($composerJsonPath));
-        return (array) $composerConfig->autoload->{'psr-4'};
+        if (!$this->namespaceIsAllowed($namespace) || !$namespace) {
+            return;
+        }
+
+        $loaded = self::createRecursive($namespace);
+        if ($loaded && count($loaded) > 0) {
+            array_push($mappedClasses, ...$loaded);
+        }
     }
 
-    public function getNamespaceClass()
+    private function loadClass(string $class, array &$mappedClasses): void
+    {
+        if (!$this->namespaceIsAllowed($class) || !$class) {
+            return;
+        }
+
+        $reflection = new \ReflectionClass($class);
+        if ($reflection->isInstantiable()) {
+            $mappedClasses[] = $class;
+        }
+    }
+
+    private function buildClassNamespace(string $class): false|string
+    {
+        if (!endsWith(".php", $class)) {
+            return false;
+        }
+
+        $namespace = $this->namespace() . "\\" . pascalCase(str_replace(".php", "", $class));
+        if (!class_exists($namespace)) {
+            return false;
+        }
+
+        return $namespace;
+
+    }
+
+    private function psr4LoadedClasses()
+    {
+        return composer("autoload.psr-4");
+    }
+
+    private function getNamespaceClass()
     {
         $psr4 = $this->psr4LoadedClasses();
         $realPath = explode("\\", $this->namespace());
         $root = array_shift($realPath);
-        return $realPath = $this->appRoot() . $psr4[$root . "\\"]  . implode("/", $realPath);
+        return $realPath = $this->appRoot() . "/" . $psr4[$root . "\\"] . implode("/", $realPath);
     }
 
-    public function recursive()
+    private function recursive()
     {
         return $this->recursive;
     }
@@ -90,12 +115,12 @@ class ClassLoader
     }
 
     public function unload(array $classes = [])
-    {  
+    {
         $this->unload = $classes;
     }
 
-    public function permitedToLoad(string $class)
-    {  
+    public function namespaceIsAllowed(string $class)
+    {
         return !isset(array_flip($this->unload)[$class]);
     }
 }

@@ -194,7 +194,7 @@ if (!function_exists("config")) {
 if (!function_exists("composer")) {
     function composer(?string $key = null): mixed
     {
-        $composer = file_get_contents(__DIR__ . "/../../composer.json");
+        $composer = file_get_contents(ROOT_PATH . "/composer.json");
         $composer = json_decode($composer, true);
         if (!$key) {
             return $composer;

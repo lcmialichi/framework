@@ -4,6 +4,7 @@ use App\Console\Console;
 use App\Helpers\ClassLoader;
 use App\Console\Commands\Command;
 use App\Exception\CommandHandler;
+use App\Console\Execution\CommandEmiter;
 use App\Contracts\ExceptionHandlerInterface;
 
 require __DIR__ . "/vendor/autoload.php";
@@ -15,6 +16,7 @@ $app->bind(
     fn($app) => $app->make(CommandHandler::class)
 );
 
+// dd(resolve(CommandEmiter::class));
 $console = new Console();
 $command = $app->make(Command::class, [
     "loader" => new ClassLoader(
