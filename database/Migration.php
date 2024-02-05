@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace Database;
 
 use QueryBuilder\Macro\Create;
