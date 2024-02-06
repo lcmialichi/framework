@@ -4,15 +4,8 @@ namespace App\Console;
 
 use App\Console\Bags\OptionBag;
 
-/**
- * 
- * @todo remover redundancia de codigo igual na funcao lines e columns
- * @todo Verificar o porque em um terminal bash só é retornado 3000 linhas
- * @todo separar execuçoes do console com o output (vamos manter o SOLID ne :D)
- */
 class Console
 {
-
     public function __construct(
         private OptionBag $options = new OptionBag()
     ) {
@@ -107,8 +100,7 @@ class Console
 
     public function readFromProcess(string $command)
     {
-
-        if (!\function_exists('proc_open')) {
+        if (!function_exists('proc_open')) {
             return null;
         }
 
@@ -118,7 +110,7 @@ class Console
         ];
 
         $process = proc_open($command, $descriptorspec, $pipes, null, null, ['suppress_errors' => true]);
-        if (!\is_resource($process)) {
+        if (!is_resource($process)) {
             return null;
         }
 

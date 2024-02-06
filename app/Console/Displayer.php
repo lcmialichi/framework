@@ -82,11 +82,6 @@ class Displayer
         return $this->console;
     }
 
-    /**
-     * Retorna uma instancia de progressBar
-     *
-     * @return ProgressBar
-     */
     public function progressBar(): ProgressBar
     {
         return resolve(ProgressBar::class);
@@ -121,10 +116,5 @@ class Displayer
     public function success(string $message)
     {
         $this->output($message, "green");
-    }
-
-    protected function container(): Container
-    {
-        return Container::getInstance();
     }
 }

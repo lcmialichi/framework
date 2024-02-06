@@ -5,20 +5,24 @@ namespace App\Console\Execution;
 use App\Console\Console;
 use App\Console\Displayer;
 use App\Helpers\ClassLoader;
+use App\Container\ContainerInterface;
 use App\Contracts\ExceptionHandlerInterface;
 use App\Console\Execution\CommandsCollection;
 
-class CommandEmiter extends Displayer
+class CommandEmitter extends Displayer
 {
     private ?string $currentExecution = null;
-    private const COMMAND_SIZE = 35;
-    private const OPTIONS_SIZE = 35;
-
+    private const OUTPUT_SIZE = 35;
+    private const STRLEN_SIZE = 35;
+    private const OPTIONS_SIZE = 75;
+    private const GENERAL_SECTION = "general";
     private CommandsCollection $commands;
 
-    public function __construct()
-    {
-        parent::__construct(new Console); /** @todo this will be diferent on future */
+    public function __construct(
+        private ContainerInterface $app,
+        private ExceptionHandlerInterface $exceptionHandler
+    ) {
+        parent::__construct(new Console); /** @todo this will refacted in future */
         $this->currentExecution = $this->getCommandFromInput();
         $this->commands = $this->loadCommands();
     }
@@ -33,12 +37,10 @@ class CommandEmiter extends Displayer
         return config("app.command.namespace");
     }
 
-    public function loadCommands()
+    public function loadCommands(): CommandsCollection
     {
-        $loader = new ClassLoader($this->getCommandsNamespace(), true);
-        $commands = $loader->load();
         $collection = [];
-        foreach ($commands as $command) {
+        foreach ($this->getCommands() as $command) {
             $commandInstance = new Command($command);
             $name = $commandInstance->command();
             if ($name === null) {
@@ -46,7 +48,7 @@ class CommandEmiter extends Displayer
                 continue;
             }
 
-            $section = "general";
+            $section = self::GENERAL_SECTION;
             if (str_contains($name, ":")) {
                 $section = explode(":", $name)[0];
             }
@@ -57,7 +59,13 @@ class CommandEmiter extends Displayer
         return new CommandsCollection($collection);
     }
 
-    public function emit(?string $command = null): void
+    private function getCommands(): array
+    {
+        $loader = new ClassLoader($this->getCommandsNamespace(), true);
+        return $loader->load();
+    }
+
+    public function emitt(?string $command = null): void
     {
         $command = $command ?? $this->currentExecution;
         if ($command === null) {
@@ -80,11 +88,12 @@ class CommandEmiter extends Displayer
     private function showCommandsList(array $commands): void
     {
         foreach ($commands as $command) {
-            $this->output(sprintf("  %s", str_pad($command->command(), self::COMMAND_SIZE)), "cyan", "balck", false);
-            $this->output(sprintf("%s", str_pad($command->description(), self::OPTIONS_SIZE)), "white", "black", false);
+            $this->output($this->prepareOutput("  " . $command->command()), "cyan", "balck", false);
+            $this->output($this->prepareOutput($command->description()), "white", "black", false);
 
             if ($command->options() !== null) {
-                $this->output(str_pad($this->stringfyOptions($command->options()), self::OPTIONS_SIZE), "white", "grey", false);
+                $options = $this->stringfyOptions($command->options());
+                $this->output($this->prepareOutput($options, self::OPTIONS_SIZE), "white", "grey", false);
             }
 
             echo "\n";
@@ -102,6 +111,19 @@ class CommandEmiter extends Displayer
         return implode(", ", $array);
     }
 
+    private function prepareOutput(string $string, ?int $maxLenght = null): string
+    {
+        if (is_null($maxLenght)) {
+            $maxLenght = self::STRLEN_SIZE;
+        }
+
+        if (strlen($string) > $maxLenght) {
+            $string = substr($string, 0, $maxLenght - 3) . "...";
+        }
+
+        return sprintf("%s", str_pad($string, self::OUTPUT_SIZE));
+    }
+
     private function dispatch(string $userCommand)
     {
         $command = $this->commands->findByName($userCommand);
@@ -115,12 +137,9 @@ class CommandEmiter extends Displayer
         }
 
         try {
-            $handler = resolve($command->getCommand())->handler(...);
-            resolve($handler);
+            $this->app->call($command->getCommand() . "@handler");
         } catch (\Exception $e) {
-             resolve(
-                ExceptionHandlerInterface::class
-            )->render($e);
+            $this->exceptionHandler->render($e);
         }
 
     }

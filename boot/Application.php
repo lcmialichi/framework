@@ -2,7 +2,6 @@
 
 use App\Container\Container;
 use App\Http\Request\Request;
-use App\Container\ContainerService;
 use App\Container\ContainerInterface;
 use App\Http\Request\RequestInterface;
 use App\ORM\Connection\Group\ConnectionGroup;
