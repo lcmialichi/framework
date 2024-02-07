@@ -205,12 +205,15 @@ class Curl
 
     public function captcha(): Captcha
     {
-        return new Captcha;
+        return new Captcha(
+            environment('API_CAPTCHA_KEY'),
+            environment('API_CAPTCHA')
+        );
     }
 
     public function recaptchaSolve(string $url, string $sitekey)
     {
-        return (new Captcha)->recaptchaSolve($url, $sitekey);
+        return $this->captcha()->recaptchaSolve($url, $sitekey);
 
     }
 
