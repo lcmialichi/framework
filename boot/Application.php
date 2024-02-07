@@ -30,13 +30,6 @@ $container->bind(
 );
 
 $container->bind(
-    App\Console\Console::class,
-    fn() => new App\Console\Console(
-        App\Console\Bags\OptionBag::createFromArgs()
-    )
-);
-
-$container->bind(
     App\Contracts\ExceptionHandlerInterface::class,
     fn() => new App\Exception\Handler
 );
