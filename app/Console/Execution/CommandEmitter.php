@@ -2,14 +2,14 @@
 
 namespace App\Console\Execution;
 
-use App\Console\Console;
-use App\Console\Displayer;
+use App\Console\Command;
 use App\Helpers\ClassLoader;
 use App\Container\ContainerInterface;
 use App\Contracts\ExceptionHandlerInterface;
 use App\Console\Execution\CommandsCollection;
+use App\Console\Execution\Command as CommandEntity;
 
-class CommandEmitter extends Displayer
+class CommandEmitter extends Command
 {
     private ?string $currentExecution = null;
     private const OUTPUT_SIZE = 35;
@@ -22,14 +22,13 @@ class CommandEmitter extends Displayer
         private ContainerInterface $app,
         private ExceptionHandlerInterface $exceptionHandler
     ) {
-        parent::__construct(new Console); /** @todo this will refacted in future */
         $this->currentExecution = $this->getCommandFromInput();
         $this->commands = $this->loadCommands();
     }
 
     public function getCommandFromInput()
     {
-        return $this->console()->argument(1);
+        return $this->argument(1);
     }
 
     public function getCommandsNamespace(): string
@@ -41,7 +40,7 @@ class CommandEmitter extends Displayer
     {
         $collection = [];
         foreach ($this->getCommands() as $command) {
-            $commandInstance = new Command($command);
+            $commandInstance = new CommandEntity($command);
             $name = $commandInstance->command();
             if ($name === null) {
                 $this->warning("Warning: Command {$command} does not have a command property. Skipping...");
@@ -84,16 +83,16 @@ class CommandEmitter extends Displayer
         }
     }
 
-    /** @param array<Command> $commands */
+    /** @param array<CommandEntity> $commands */
     private function showCommandsList(array $commands): void
     {
         foreach ($commands as $command) {
-            $this->output($this->prepareOutput("  " . $command->command()), "cyan", "balck", false);
-            $this->output($this->prepareOutput($command->description()), "white", "black", false);
+            $this->quote($this->prepareOutput("  " . $command->command()), false);
+            $this->output($this->prepareOutput($command->description()), "", "", false);
 
             if ($command->options() !== null) {
                 $options = $this->stringfyOptions($command->options());
-                $this->output($this->prepareOutput($options, self::OPTIONS_SIZE), "white", "grey", false);
+                $this->soft($this->prepareOutput($options, self::OPTIONS_SIZE), false);
             }
 
             echo "\n";

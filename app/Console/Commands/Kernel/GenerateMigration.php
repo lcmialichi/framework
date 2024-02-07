@@ -31,7 +31,7 @@ class GenerateMigration extends Generator
 
     protected function name(): string
     {
-        return $this->generateName($this->console()->option("n"));
+        return $this->generateName($this->option("n"));
     }
 
     protected function folder(): string

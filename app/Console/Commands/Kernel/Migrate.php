@@ -3,13 +3,13 @@
 namespace App\Console\Commands\Kernel;
 
 use Database\Migration;
-use App\Console\Displayer;
+use App\Console\Command;
 use QueryBuilder\QueryBuilder;
 use App\Configuration\Environment;
 use QueryBuilder\Connection\Connection;
 use App\ORM\Connection\ConnectionHandler;
 
-class Migrate extends Displayer
+class Migrate extends Command
 {
     public $command = "migration:up";
     public $description = "migrate database";
@@ -47,7 +47,7 @@ class Migrate extends Displayer
         }
 
         if ($count == count($migrations)) {
-            $this->warning("Nothing to migrate!");
+            $this->quote("Nothing to migrate!");
         }
     }
 
@@ -83,7 +83,7 @@ class Migrate extends Displayer
             return;
         }
 
-        $this->output(" -- Seeding database...", "brown");
+        $this->quote(" -- Seeding database...");
         $pb->start(count($seeds));
 
         foreach ($seeds as $seed) {
@@ -165,7 +165,7 @@ class Migrate extends Displayer
 
     private function requestDataBaseCreation(): void
     {
-        $this->warning(sprintf("Database %s not found, do you want to create? (y/n)", $this->dataBase()));
+        $this->quote(sprintf("Database %s not found, do you want to create? (y/n)", $this->dataBase()));
         $answer = $this->waitForInteraction(100);
 
         if (in_array($answer, ["y", "Y"])) {
@@ -228,17 +228,17 @@ class Migrate extends Displayer
 
     private function seed(): bool
     {
-        return $this->console()->option("seed") === true;
+        return $this->option("seed") === true;
     }
 
     private function force(): bool
     {
-        return $this->console()->option("force") === true;
+        return $this->option("force") === true;
     }
 
     private function version(): ?string
     {
-        return $this->console()->option("version");
+        return $this->option("version");
     }
 
 }

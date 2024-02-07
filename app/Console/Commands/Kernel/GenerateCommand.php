@@ -25,7 +25,7 @@ class GenerateCommand extends Generator
 
     protected function name(): string
     {
-        if ($name = $this->console()->argument(2)) {
+        if ($name = $this->argument(2)) {
             return $name;
         }
         throw new \Exception("<class-name> is required for this command");

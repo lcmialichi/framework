@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands\Kernel;
 
-use App\FileSystem\Stream;
 use App\Console\Files\Generator;
 
 class GenerateSeeds extends Generator
@@ -25,7 +24,10 @@ class GenerateSeeds extends Generator
 
     protected function name(): string
     {
-        return $this->console()->argument(2);
+        if ($name = $this->argument(2)) {
+            return $name;
+        }
+        throw new \Exception("<class-name> is required for this command");
     }
 
     protected function folder(): string

@@ -4,10 +4,10 @@
 
 namespace App\Console\Files;
 
-use App\Console\Displayer;
+use App\Console\Command;
 use App\FileSystem\Stream;
 
-abstract class Generator extends Displayer
+abstract class Generator extends Command
 {
     private ?Stream $stream = null;
 
@@ -64,7 +64,7 @@ abstract class Generator extends Displayer
 
     private function getPath(): string
     {
-        return $this->folder() . "/" . $this->name() . ".php";
+        return $this->folder() . "/" . pascalCase($this->name()) . ".php";
     }
 
     protected function replace(array $replaces): string
@@ -80,9 +80,9 @@ abstract class Generator extends Displayer
 
     private function finish(): void
     {
-        $this->output("Namespace", "green", "black", false);
-        $this->output(sprintf(" '%s' ", "{$this->namespace()}\\{$this->name()}"), "brown", "black", false);
-        $this->output("generated with success", "green", "black");
+        $this->output("Namespace", "#3f8a37", "", false);
+        $this->output(sprintf(" '%s' ", "{$this->namespace()}\\{$this->name()}"), "#884c11", "", false);
+        $this->output("generated with success", "#3f8a37");
     }
 
 }

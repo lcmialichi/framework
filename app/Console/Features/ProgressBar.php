@@ -2,9 +2,9 @@
 
 namespace App\Console\Features;
 
-use App\Console\Displayer;
+use App\Console\Command;
 
-class ProgressBar extends Displayer
+class ProgressBar extends Command
 {
     /**
      * @var int
@@ -44,7 +44,6 @@ class ProgressBar extends Displayer
         $this->total = $length;
         $this->bar = str_repeat(" ", $this->barSize);
         $this->position = $start;
-        $this->setOverwrite(true);
         $this->output($this->getBar());
     }
 
@@ -65,10 +64,9 @@ class ProgressBar extends Displayer
 
     public function increment(int $count = 1): void
     {
-        $this->console->removeLastLine();
+        $this->removeLastLine();
         $this->incrementProgress($count);
         if ($this->position >= $this->total) {
-            // $this->finish();
             return;
         }
 

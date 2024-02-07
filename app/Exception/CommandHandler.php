@@ -2,19 +2,19 @@
 
 namespace App\Exception;
 
-use App\Console\Displayer;
+use App\Console\Command;
 use App\Http\Response\ResponseInterface;
 use App\Contracts\ExceptionHandlerInterface;
 
-class CommandHandler implements ExceptionHandlerInterface
+class CommandHandler extends Command implements ExceptionHandlerInterface
 {
-    public function __construct(private Displayer $console)
+    public function __construct()
     {
     }
 
     public function render(\Throwable $error):  null|ResponseInterface
     {
-        $this->console->error($error->getMessage());
+        $this->error($error->getMessage());
         return null;
     }
 
