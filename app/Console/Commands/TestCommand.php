@@ -18,7 +18,6 @@ class TestCommand extends Command
        $this->notice("notice!");
        $this->info("info!");
 
-
        $p = new ProgressBar();
 
        $p->start();

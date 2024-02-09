@@ -11,17 +11,11 @@ final class CurlResponse
     ) {
     }
 
-    /**
-     * @return object
-     */
     public function object(): ?object
     {
         return json_decode($this->response);
     }
 
-    /**
-     * @return mixed
-     */
     public function json($key = null): mixed
     {
         $data = json_decode($this->body(), true);
@@ -66,17 +60,11 @@ final class CurlResponse
         return $this->statusCode() == 302;
     }
 
-    /**
-     * @return string
-     */
     public function body(): string
     {
         return $this->response;
     }
 
-    /**
-     * @return array|string
-     */
     public function getHeaders(?string $header = null): null|array|string
     {
         if ($header) {
@@ -85,9 +73,6 @@ final class CurlResponse
         return $this->headers;
     }
 
-    /**
-     * @return array|string
-     */
     public function getInfo(?string $info = null): array|string
     {
         if ($info) {
@@ -96,11 +81,6 @@ final class CurlResponse
         return $this->curlInfo;
     }
 
-    /**
-     * #### Retorna true caso o response contenha a string informada
-     * @return bool
-     * @param string
-     */
     public function contains(string $string): bool
     {
         return str_contains($this->response, $string);

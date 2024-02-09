@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Console\Files;
 
 use App\Console\Command;
